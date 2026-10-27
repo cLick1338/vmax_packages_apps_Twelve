@@ -6,12 +6,10 @@
 package org.lineageos.twelve.fragments
 
 import android.animation.ValueAnimator
-import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
-import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceView
@@ -19,7 +17,6 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -78,7 +75,6 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     private val currentLyricsTextView by getViewProperty<TextView>(R.id.currentLyricsTextView)
     private val currentTimestampTextView by getViewProperty<TextView>(R.id.currentTimestampTextView)
     private val durationTimestampTextView by getViewProperty<TextView>(R.id.durationTimestampTextView)
-    private val equalizerMaterialButton by getViewProperty<MaterialButton>(R.id.equalizerMaterialButton)
     private val fileTypeTextView by getViewProperty<TextView>(R.id.fileTypeTextView)
     private val hiResImageView by getViewProperty<ImageView>(R.id.hiResImageView)
     private val isFavoriteMaterialButton by getViewProperty<MaterialButton>(R.id.isFavoriteMaterialButton)
@@ -108,12 +104,6 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
     // Progress slider state
     private var isProgressSliderDragging = false
     private var animator: ValueAnimator? = null
-
-    // AudioFX
-    private val audioEffectsStartForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            // Empty
-        }
 
     // Visualizer
     private val visualizerManager = NierVisualizerManager()
@@ -247,20 +237,6 @@ class NowPlayingFragment : Fragment(R.layout.fragment_now_playing) {
                         it.uri,
                         fromNowPlaying = true,
                     )
-                )
-            }
-        }
-
-        equalizerMaterialButton.setOnClickListener {
-            // Open system equalizer
-            viewModel.audioSessionId.value?.let { audioSessionId ->
-                audioEffectsStartForResult.launch(
-                    Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
-                        putExtra(AudioEffect.EXTRA_PACKAGE_NAME, requireContext().packageName)
-                        putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId)
-                        putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
-                    },
-                    null
                 )
             }
         }
